@@ -1,17 +1,18 @@
 import React, { Component } from "react";
 
 class Like extends Component {
-  state = {
-    clicked: false
-  };
   render() {
     return (
       <div>
-        <i class="fa fa-heart-o btn" aria-hidden="true"></i>
+        <i className={this.checkLikes()} onClick={this.props.onLike}></i>
       </div>
     );
+  }
 
-    //<i class="fa fa-heart" aria-hidden="true"></i>;
+  checkLikes() {
+    let classes = "btn fa ";
+    classes += this.props.status ? "fa-heart" : "fa-heart-o";
+    return classes;
   }
 }
 
