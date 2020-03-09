@@ -1,16 +1,50 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
-import Like from "./Like";
+import Like from "./like";
+import Pagination from "./pagination";
 
 class Movies extends Component {
   state = {
-    movies: getMovies()
+    movies: getMovies(),
+    selectedPage: 1
   };
+
+  componentDidMount() {
+    let movies = this.state.movies;
+    this.state.movies.forEach(m => {
+      m.like = false;
+    });
+
+    this.setState({ movies });
+    this.handlePageClick(1);
+    console.log(movies);
+  }
 
   handleDelete = movieId => {
     console.log(movieId);
     this.setState({ movies: this.state.movies.filter(m => m._id !== movieId) });
   };
+
+  handlelLike = movie => {
+    let movies = [...this.state.movies];
+    let index = movies.indexOf(movie);
+    movies[index].like = !movies[index].like;
+    this.setState({ movies });
+  };
+
+  handlePagenation() {
+    let movies = [...this.state.movies];
+    let moviesPages = movies.map(m => m.page);
+    let pages = moviesPages.filter((item, i, ar) => ar.indexOf(item) === i);
+    return pages;
+  }
+
+  handlePageClick = page => {
+    let movies = [...this.state.movies];
+    movies = movies.filter(m => m.page === page);
+    this.setState({ selectedPage: page });
+  };
+
   render() {
     return (
       <div>
@@ -41,7 +75,7 @@ class Movies extends Component {
 
                 <td>{m.dailyRentalRate}</td>
                 <td>
-                  <Like />
+                  <Like status={m.like} onLike={() => this.handlelLike(m)} />
                 </td>
                 <td>
                   <button
@@ -55,6 +89,13 @@ class Movies extends Component {
             ))}
           </tbody>
         </table>
+        <br />
+
+        <Pagination
+          pages={this.handlePagenation()}
+          selected={this.state.selectedPage}
+          onClick={this.handlePageClick}
+        />
       </div>
     );
   }
