@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
 import Like from "./like";
 import Pagination from "./pagination";
-import { paginate } from "../utils/paginate";
+import { Paginate } from "../utils/Paginate";
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
-    pageSize: 4,
-    selectedPage: 1
+    pageNumber: 1,
+    pageSize: 4
   };
 
   componentDidMount() {
@@ -19,7 +19,6 @@ class Movies extends Component {
 
     this.setState({ movies });
     //this.handlePageClick(1);
-    console.log(movies);
   }
 
   handleDelete = movieId => {
@@ -34,33 +33,33 @@ class Movies extends Component {
     this.setState({ movies });
   };
 
-  handlePageClick = page => {
-    this.setState({ selectedPage: page });
-  };
-
+  handlePagenation() {
+    let movies = [...this.state.movies];
+    let moviesPages = movies.map(m => m.page);
+    let pages = moviesPages.filter((item, i, ar) => ar.indexOf(item) === i);
     return pages;
   }
 
   handlePageClick = page => {
-    let movies = [...this.state.movies];
-    movies = movies.filter(m => m.page === page);
-    this.setState({ selectedPage: page });
+    console.log(page);
+    this.setState({ pageNumber: page });
   };
 
   render() {
-    if (this.state.movies.length === 0) return <p> There are no Movies</p>;
-
-    const movies = paginate(
+    let movies = Paginate(
       this.state.movies,
-      this.state.selectedPage,
+      this.state.pageNumber,
       this.state.pageSize
     );
     return (
       <div>
         <br />
-        {this.state.movies.length > 0 && "Showing " + this.state.movies.length}
+        <p>
+          {this.state.movies.length > 0 &&
+            "Showing " + this.state.movies.length}
+          {this.state.movies.length === 0 && "There are no movies to show"}
+        </p>
 
-        <br />
         <table className="table">
           <thead>
             <tr>
@@ -98,9 +97,9 @@ class Movies extends Component {
         <br />
 
         <Pagination
-          pages={this.state.pageSize}
-          itemCount={this.state.movies.length}
-          selected={this.state.selectedPage}
+          items={this.state.movies}
+          selected={this.state.pageNumber}
+          pageSize={this.state.pageSize}
           onClick={this.handlePageClick}
         />
       </div>
