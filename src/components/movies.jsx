@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
 import Like from "./like";
 import Pagination from "./pagination";
+import { paginate } from "../utils/paginate";
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
+    pageSize: 4,
     selectedPage: 1
   };
 
@@ -16,7 +18,7 @@ class Movies extends Component {
     });
 
     this.setState({ movies });
-    this.handlePageClick(1);
+    //this.handlePageClick(1);
     console.log(movies);
   }
 
@@ -32,10 +34,10 @@ class Movies extends Component {
     this.setState({ movies });
   };
 
-  handlePagenation() {
-    let movies = [...this.state.movies];
-    let moviesPages = movies.map(m => m.page);
-    let pages = moviesPages.filter((item, i, ar) => ar.indexOf(item) === i);
+  handlePageClick = page => {
+    this.setState({ selectedPage: page });
+  };
+
     return pages;
   }
 
@@ -46,15 +48,19 @@ class Movies extends Component {
   };
 
   render() {
+    if (this.state.movies.length === 0) return <p> There are no Movies</p>;
+
+    const movies = paginate(
+      this.state.movies,
+      this.state.selectedPage,
+      this.state.pageSize
+    );
     return (
       <div>
         <br />
-        <p>
-          {this.state.movies.length > 0 &&
-            "Showing " + this.state.movies.length}
-          {this.state.movies.length === 0 && "There are no movies to show"}
-        </p>
+        {this.state.movies.length > 0 && "Showing " + this.state.movies.length}
 
+        <br />
         <table className="table">
           <thead>
             <tr>
@@ -67,7 +73,7 @@ class Movies extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.movies.map(m => (
+            {movies.map(m => (
               <tr key={m._id}>
                 <td>{m.title}</td>
                 <td>{m.genre.name}</td>
@@ -92,7 +98,8 @@ class Movies extends Component {
         <br />
 
         <Pagination
-          pages={this.handlePagenation()}
+          pages={this.state.pageSize}
+          itemCount={this.state.movies.length}
           selected={this.state.selectedPage}
           onClick={this.handlePageClick}
         />
