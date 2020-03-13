@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Paginate } from "../utils/Paginate";
 import _ from "lodash";
+import { PropTypes } from "prop-types";
 
 class Pagination extends Component {
   state = {
@@ -36,5 +36,12 @@ class Pagination extends Component {
     );
   }
 }
+
+Pagination.propTypes = {
+  itemCount: PropTypes.number.isRequired,
+  pages: PropTypes.number.isRequired,
+  selected: PropTypes.number.isRequired,
+  onClick: PropTypes.func.isRequired
+};
 
 export default Pagination;
